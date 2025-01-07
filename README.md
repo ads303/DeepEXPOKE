@@ -48,6 +48,8 @@ The example PRS knockoffs file is in a .7zip format; please unzip it before usin
 :star: The FDR filter function is from [DeepKnockoffs](https://github.com/msesia/deepknockoffs).\
 :star: The Python implementation of DG algorithm is based on its Java version from [Tetrad](https://www.ccd.pitt.edu).\
 :star: The implementation of the PC algorithm used in this project is from [pcalg](https://github.com/keiichishima/pcalg).
+:star: The polygenic risk scoring algorithm used in this project is from [pgsc_calc](https://pgsc-calc.readthedocs.io/en/latest/).
+
 
 # Contact
 :email: Please let us know if you have any questions, bug reports, or feedback via the following email:
