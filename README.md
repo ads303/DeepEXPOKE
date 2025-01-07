@@ -21,9 +21,11 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 1. Install and test Nextflow and pgsc_calc [here](https://pgsc-calc.readthedocs.io/en/latest/). 
 2. Follow the instructions and set up pgsc_calc for use on your local or remote computing platform.
 
-# Run the following .ipynb notebooks on the example data in the following order:
-1. Install and test Nextflow and pgsc_calc [here](https://pgsc-calc.readthedocs.io/en/latest/). 
-2. Follow the instructions and set up pgsc_calc for use on your local or remote computing platform.
+# Run the following .ipynb notebooks using Jupyter Lab/your preferred python IDE on the example data provided in the DeepEXPOKE repository in the following order:
+1. ``Dataset_preprocessing.ipynb``
+2. ``W_stats_all42.ipynb``
+3. ``imbalanced+RF.ipynb``
+4. Optional: Run ``final_LR+RF+XGB_featureselection-Copy1.ipynb`` for feature selection comparisons. 
 
  
 
@@ -40,6 +42,7 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 :email: Please let us know if you have any questions, bug reports, or feedback via the following email:
 <p align="center">
     :e-mail: hyp15@pitt.edu
+    :e-mail: ads303@pitt.edu
 </p>
     
 
