@@ -33,8 +33,8 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 # 3) Run the following .ipynb notebooks using Jupyter Lab/your preferred python IDE on the example data provided in the DeepEXPOKE repository in the following order:
 1. ``Dataset_preprocessing.ipynb``
 2. ``W_stats_all42-DeepEXPOKE.ipynb``
-3. ``imbalanced+RF.ipynb``
-4. Optional: Run ``final_LR+RF+XGB_featureselection-Copy1.ipynb`` for feature selection comparisons.
+3. ``imbalanced+RF-DeepEXPOKE.ipynb``
+4. Optional: Run ``final_LR+RF+XGB_featureselection.ipynb`` for feature selection comparisons.
 
 The example PRS knockoffs file is in a .7zip format; please unzip it before using in the example notebook. 
 
