@@ -25,7 +25,7 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 ``./nextflow run pgscatalog/pgsc_calc \
  -profile conda \
  --input ukb_prs_samplesheet_final.csv --target_build GRCh37 \
- --pgs_id PGS000671, (insert other IDs here) \
+ --pgs_id PGSXXXXXX, PGSXXXXXX, (insert the actual IDs here instead of XXXXXX) \
  --min_overlap 0.75 \
  --run_ancestry ./pgsc_calc.tar.zst``
 
