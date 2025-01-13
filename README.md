@@ -17,7 +17,7 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 :stars: R environment\
 :stars: Java environment
 
-# 2) Install NEXTFLOW and pgsc_calc
+# 2) Install NEXTFLOW and pgsc_calc (Not necessary for running DeepEXPOKE example code)
 1. Install and test Nextflow and pgsc_calc [here](https://pgsc-calc.readthedocs.io/en/latest/). 
 2. Follow the instructions and set up pgsc_calc for use on your local or remote computing platform.
 3. Create your test samplesheet as per ``pgsc_calc`` documentation.
@@ -30,7 +30,7 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
  --run_ancestry ./pgsc_calc.tar.zst``
 
 
-# 3) Run the following .ipynb notebooks using Jupyter Lab/your preferred python IDE on the example data provided in the DeepEXPOKE repository in the following order:
+# 3) Run the following example .ipynb notebooks using Jupyter Lab/your preferred python IDE on the example data provided in the DeepEXPOKE repository in the following order:
 1. ``Dataset_preprocessing.ipynb``
 2. ``W_stats_all42-DeepEXPOKE.ipynb``
 3. ``imbalanced+RF-DeepEXPOKE.ipynb``
