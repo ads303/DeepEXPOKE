@@ -37,6 +37,7 @@ The exposome refers to the totality of environmental, behavioral, and lifestyle 
 4. Optional: Run ``final_LR+RF+XGB_featureselection.ipynb`` for feature selection comparisons.
 
 The example PRS knockoffs file is in a .7zip format; please unzip it before using in the example notebook. 
+Please refer to the ``featuremapping.csv`` file for interpretation of example causal results. 
 
  
 
