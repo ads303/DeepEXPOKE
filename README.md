@@ -44,7 +44,7 @@ Please refer to the ``featuremapping.csv`` file for interpretation of example ca
 
 # Acknowledgements and References
 
-#### :trophy: Several components of the DeepEXPOKE codebase come from the follwing projects:
+#### :trophy: Several components of the DeepEXPOKE codebase come from the following projects:
 :star: The MGM Java implemention in DAG-DeepVASE is from [causalMGM](https://github.com/benoslab/causalMGM) and [TetradLite](https://github.com/benoslab/tetradLite).\
 :star: The DeepPINK implementation in DAG-DeepVASE is from [DeepPINK](https://github.com/younglululu/DeepPINK).\
 :star: The FDR filter function in DAG-DeepVASE is from [DeepKnockoffs](https://github.com/msesia/deepknockoffs).\
