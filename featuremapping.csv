@@ -1,0 +1,43 @@
+﻿Feature,Label
+Apolipoprotein A1,F1
+Apolipoprotein B,F2
+Body mass index (BMI),F3
+Calcium,F4
+Creatinine,F5
+Glycated haemoglobin (HbA1c),F6
+HDL cholesterol,F7
+Standing height,F8
+"Intra-ocular pressure, corneal-compensated (left)",F9
+"Intra-ocular pressure, corneal-compensated (right)",F10
+Total Cholesterol,F11
+"Diastolic blood pressure, automated reading",F12
+"Systolic blood pressure, automated reading",F13
+Age high blood pressure diagnosed,F14
+Number of self-reported cancers,F15
+Alanine aminotransferase (ALT),F16
+Albumin,F17
+Alkaline phosphatase (ALP),F18
+Aspartate aminotransferase (AST),F19
+C-reactive protein (CRP),F20
+Direct bilirubin,F21
+Glucose,F22
+IGF-1 (Insulin-like Growth Factor 1),F23
+LDL Cholesterol,F24
+Lipoprotein A,F25
+Microalbumin in urine,F26
+Phosphate,F27
+Potassium in urine,F28
+SHBG (Sex Hormone-Binding Globulin),F29
+Sodium in urine,F30
+Testosterone,F31
+Total bilirubin,F32
+Total protein,F33
+Triglycerides,F34
+Urate,F35
+Urea,F36
+Vitamin D,F37
+Diabetes Mellitus,F38
+COPD (Chronic Obstructive Pulmonary Disease),F39
+Chronic renal disease,F40
+Hypertension,F41
+Asthma,F42
