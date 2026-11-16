@@ -1,6 +1,16 @@
 ![finalpipelinefigure](https://github.com/user-attachments/assets/4457b9e0-1a51-467b-9a29-484bfe0b304e)
 
 # Introduction
+## Exposure architecture model and complete score exports
+
+The optional [architecture classifier](docs/architecture_model.md) trains a
+three-class model from exposure, statKO and prsCO scores, with grouped validation
+and per-class prediction probabilities. It includes complete paired-score
+exports and validates saved-score extraction and threshold handling. Historical
+W summaries need matching run provenance before reuse. No pretrained or
+UKBB-validated architecture model is supplied. See the guide for the required
+training labels, input schemas and migration steps.
+
 The exposome refers to the totality of environmental, behavioral, and lifestyle exposures an individual experiences throughout one’s lifetime. Due to the modifiability of exposures, identifying the risk exposures on a disease is crucial for effective intervention and prevention of the disease. However, traditional analytical methods struggle to capture the complexities of exposome data: nonlinear effects, correlated exposures, and potential interplay with genetic effects. To address these challenges and accurately estimate exposure effects on complex diseases, we developed DeepEXPOKE, a deep learning framework integrating two types of knockoff features: statistical knockoffs (statKO) and polygenic risk score as knockoffs (PRSCO). DeepEXPOKE-statKO controls exposure correlation and DeepEXPOKE-PRSCO isolates genetic effects, while both can capture nonlinear effects. DeepEXPOKE is meant for UK BioBank data as of now, and will be adapted for additional data types and PRS scoring methods accordingly. The example .ipynb's do not need genetic data or PRS scoring scripts ran, but for any other data, users are asssumed to have their unique UKB feature data and chromosome .bed/.bim/.fam files downloaded to their cluster/local machines.
 ####
 
@@ -148,3 +158,4 @@ Please refer to the ``featuremapping.csv`` file for interpretation of example ca
     :e-mail: ads303@pitt.edu
 </p>
     
+
