@@ -6,7 +6,8 @@
 The optional [architecture classifier](docs/architecture_model.md) trains a
 three-class model from exposure, statKO and prsCO scores, with grouped validation
 and per-class prediction probabilities. It includes complete paired-score
-exports and validates saved-score extraction and threshold handling. Historical
+exports, a command-line matrix/score exporter with source manifests, and validation
+of saved-score extraction and threshold handling. Historical
 W summaries need matching run provenance before reuse. No pretrained or
 UKBB-validated architecture model is supplied. See the guide for the required
 training labels, input schemas and migration steps.

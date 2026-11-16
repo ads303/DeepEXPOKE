@@ -78,6 +78,32 @@ insufficient. Preserve verified participant IDs in a separate restricted manifes
 positional row numbers are not participant identifiers. Export participant data
 only to the authorized local handoff location, never into this public repository.
 
+The command-line exporter creates a new directory with a complete table, feature
+dictionary and SHA-256 source/output manifest. Use the repository's `Feature,Label`
+dictionary in the original training order. For participant matrices, supply
+`[X,statKO]`, `[X,prsCO]` and `[X,Y]`; all three X blocks must match exactly.
+The statistical and XY headers must use dictionary IDs; both control blocks must
+use `K1..Kp` in matching feature order. Descriptive PRS X headers are supported.
+
+```bash
+python -m DL.export matrices stat_matrix.txt prs_matrix.csv xy_matrix.txt \
+  /private/handoff/sepsis_incidence --feature-map featuremapping.csv \
+  --cohort UKBB --endpoint sepsis_incidence
+
+python -m DL.export scores stat_run/result_epoch20_featImport.csv \
+  prs_run/result_epoch20_featImport.csv /private/handoff/sepsis_effects \
+  --feature-map featuremapping.csv --cohort UKBB --endpoint sepsis_incidence \
+  --stat-run-index 0 --prs-run-index 0 --protocol-id paired_dnn_v1
+```
+
+The matrix command defaults to tab-separated statistical/XY inputs and comma-
+separated PRS inputs; separator flags allow either format. Its compressed CSV
+contains `source_row`, `X_<ID>`, `statKO_<ID>`, `prsCO_<ID>` and binary `Y`, in that
+order. Matrix values are preserved without scaling or fitting. The score command
+retains all raw importance scores and both W contrasts, including negative/zero
+values. It does not recover scores from W summaries or verify that independently
+supplied fits share a split. Existing destination directories are rejected.
+
 ## Train and predict
 
 Install `requirements-architecture.txt` in a separate modern Python environment.
