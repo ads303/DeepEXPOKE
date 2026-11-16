@@ -1,128 +1,62 @@
+"""Knockoff filtering of correctly paired saved DNN importances.
+
+The numerical filter can be used for either reference, but model-X FDR
+guarantees do not automatically apply to PRS-derived controls.
+"""
 import numpy as np
 import pandas as pd
-import scipy.stats as stats
-import os
+from pathlib import Path
+from DL.effects import read_pair_scores
+
 
 class FDR_control:
-    
-    def __init__(self):
-        print("__init__")
-
     def _read_feature_data(self, X_data_path):
-        sep = "," if str(X_data_path).endswith(".csv") else "\t"
-        return pd.read_csv(X_data_path, sep=sep)
-    
+        return pd.read_csv(X_data_path, sep="," if str(X_data_path).endswith(".csv") else "\t")
+
     def kfilter(self, W, offset=1.0, q=0.05):
-        """
-        Adaptive significance threshold with the knockoff filter
-        :param W: vector of knockoff statistics
-        :param offset: equal to one for strict false discovery rate control
-        :param q: nominal false discovery rate
-        :return a threshold value for which the estimated FDP is less or equal q
-        """
-        t = np.insert(np.abs(W[W!=0]),0,0)
-        t = np.sort(t)
-        ratio = np.zeros(len(t))
-        for i in range(len(t)):
-            ratio[i] = (offset + np.sum(W <= -t[i])) / np.maximum(1.0, np.sum(W >= t[i]))
-        index = np.where(ratio <= q)[0]
-        if len(index) == 0:
-            thresh = float('inf')
-        else:
-            thresh = t[index[0]]
-       
-        return thresh
-    
-    def controlFilter(self, X_data_path, W_result_path, offset=1, q=-100, bootstrap=False, seed=None):
-        if seed is not None:
-            np.random.seed(seed)
+        W = np.asarray(W, dtype=float)
+        if W.ndim != 1 or not np.isfinite(W).all():
+            raise ValueError("W must be a finite vector")
+        if offset not in (0, 1) or not np.isfinite(q) or not 0 <= q <= 1:
+            raise ValueError("Require offset 0 or 1 and q in [0, 1]")
+        for t in np.unique(np.abs(W[W != 0])):
+            if (offset + np.sum(W <= -t)) / max(1, np.sum(W >= t)) <= q:
+                return float(t)
+        return float("inf")
 
-        X_data = self._read_feature_data(X_data_path)
-        feature_list = X_data.columns.tolist()
-        number_of_features = X_data.shape[1]
+    def _scores(self, X_data_path, W_result_path, run_index=None):
+        names = self._read_feature_data(X_data_path).columns.tolist()
+        return read_pair_scores(Path(W_result_path) / "result_epoch20_featImport.csv", names, run_index)
 
-        result_path = W_result_path + '/result_epoch20_featImport.csv'
-        result_file = pd.read_csv(result_path, header=None)
-        result_list = result_file.iloc[0].values.tolist()
-        print(len(result_list))
+    def controlFilter(self, X_data_path, W_result_path, offset=1, q=0.05,
+                      bootstrap=False, seed=None, run_index=None):
+        return self.controlFilter_return_all(X_data_path, W_result_path, offset, q,
+                                            bootstrap, seed, run_index=run_index)[1]
 
-        original_result_list = result_list[:number_of_features]
-        knockoff_result_list = result_list[number_of_features:]
+    def controlFilter_return_all(self, X_data_path, W_result_path, offset=1, q=0.05,
+                                 bootstrap=False, seed=None, randomize=False, run_index=None):
+        if bootstrap or randomize:
+            raise ValueError("Resample participants and refit the DNN; shuffling scores/features is not a bootstrap")
+        table = self._scores(X_data_path, W_result_path, run_index)
+        W = table.W.to_numpy()
+        threshold = self.kfilter(W, offset, q)
+        names = table.feature_id.tolist()
+        selected = [(name, float(w), threshold) for name, w in zip(names, W)
+                    if w > 0 and w >= threshold]
+        return W, selected, names, W.tolist()
 
-        stats = []
-        for index in range(number_of_features):
-            stat = abs(original_result_list[index]) - abs(knockoff_result_list[index])
-            stats.append(stat)
-
-        W = np.array(stats)
-        threshold = self.kfilter(W, offset=offset, q=q)
-        if threshold == np.inf:
-            threshold = 0
-
-        selected_features = []
-        for index in range(number_of_features):
-            stat = abs(original_result_list[index]) - abs(knockoff_result_list[index])
-            if stat > -100:
-                selected_features.append((feature_list[index], stat, threshold))
-
-        return selected_features
-    
-    def controlFilter_return_all(self, X_data_path, W_result_path, offset=1, q=0.05, bootstrap=False, seed=None, randomize=False):
-        if seed is not None:
-            np.random.seed(seed)
-
-        X_data = self._read_feature_data(X_data_path)
-        feature_list = X_data.columns.tolist()
-        number_of_features = X_data.shape[1]
-
-        result_path = W_result_path + '/result_epoch20_featImport.csv'
-        result_file = pd.read_csv(result_path, header=None)
-        result_list = result_file.iloc[0].values.tolist()
-        print(len(result_list))
-
-        original_result_list = result_list[:number_of_features]
-        knockoff_result_list = result_list[number_of_features:]
-
+    def calculate_multiple_W_for_selected(self, X_data_path, W_result_path, selected_features,
+                                          num_iterations=10, offset=1, q=0.05, bootstrap=False):
+        """Read actual saved fits; never fabricate repeat variability."""
         if bootstrap:
-            # Bootstrap sampling
-            indices = np.random.choice(range(number_of_features), size=number_of_features, replace=True)
-            original_result_list = [original_result_list[i] for i in indices]
-            knockoff_result_list = [knockoff_result_list[i] for i in indices]
-            feature_list = [feature_list[i] for i in indices]
-
-        stats = []
-        for index in range(number_of_features):
-            stat = abs(original_result_list[index]) - abs(knockoff_result_list[index])
-            stats.append(stat)
-
-        # Introduce additional randomness if required
-        if randomize:
-            np.random.shuffle(stats)
-
-        W = np.array(stats)
-        threshold = self.kfilter(W, offset=offset, q=q)
-        if threshold == np.inf:
-            threshold = 0
-
-        selected_features = []
-        for index in range(number_of_features):
-            stat = abs(original_result_list[index]) - abs(knockoff_result_list[index])
-            if stat > threshold:
-                selected_features.append((feature_list[index], stat, threshold))
-
-        return W, selected_features, feature_list, stats
-    
-    def calculate_multiple_W_for_selected(self, X_data_path, W_result_path, selected_features, num_iterations=10, offset=1, q=0.05, bootstrap=False):
-        all_W_statistics = {feature[0]: [] for feature in selected_features}
-
-        for i in range(num_iterations):
-            seed = np.random.randint(0, 10000)
-            randomize = (i > 0)  # Introduce randomness for iterations after the first
-            print(f"Iteration {i}, Seed: {seed}, Randomize: {randomize}")
-            _, _, feature_list, stats = self.controlFilter_return_all(X_data_path, W_result_path, offset, q, bootstrap, seed, randomize=randomize)
-
-            selected_feature_indices = [feature_list.index(feature[0]) for feature in selected_features]
-            for feature, index in zip(selected_features, selected_feature_indices):
-                all_W_statistics[feature[0]].append(stats[index])
-
-        return all_W_statistics
+            raise ValueError("Bootstrap fits must be generated by participant resampling and DNN refitting first")
+        path = Path(W_result_path) / "result_epoch20_featImport.csv"
+        n_saved = len(pd.read_csv(path, header=None))
+        if not isinstance(num_iterations, int) or not 1 <= num_iterations <= n_saved:
+            raise ValueError("Not enough independently saved fits for num_iterations")
+        output = {feature[0]: [] for feature in selected_features}
+        for run_index in range(num_iterations):
+            table = self._scores(X_data_path, W_result_path, run_index).set_index("feature_id")
+            for name in output:
+                output[name].append(float(table.loc[name, "W"]))
+        return output

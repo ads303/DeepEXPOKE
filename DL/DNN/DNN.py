@@ -16,6 +16,7 @@ import time
 import math
 import sys
 import os
+import uuid
 
 class DNN:
     output_loss = 'mse'
@@ -76,9 +77,14 @@ class DNN:
     
     class Job_finish_Callback(keras.callbacks.Callback):
         #Constructor
-        def __init__(self, outputDir, pVal):
+        def __init__(self, outputDir, pVal, feature_names=None, control_kind="unspecified", run_id=None):
             self.pVal = pVal
             self.outputDir = outputDir
+            self.feature_names = list(feature_names) if feature_names is not None else ["F" + str(i + 1) for i in range(pVal)]
+            if len(self.feature_names) != pVal or len(set(self.feature_names)) != pVal:
+                raise ValueError("Provide one unique feature name per input pair")
+            self.control_kind = control_kind
+            self.run_id = run_id or str(uuid.uuid4())
         def on_epoch_end(self, epoch, logs={}):
             print('on_epoch_end')
             h_local1_weight = np.array(self.model.layers[1].get_weights()[0]);
@@ -129,3 +135,20 @@ class DNN:
                 myfile.write(','.join([str(x) for x in v3.flatten()]) + '\n');
             with open(os.path.join(self.outputDir, 'result_epoch'+ str(epoch+1) +'_featWeight.csv'), "a+") as myfile:
                 myfile.write(','.join([str(x) for x in v5.flatten()]) + '\n');
+            # Preserve every channel with explicit names and a fit identifier.
+            # vstack(...).T above is (1, 2*p), with exposure and control blocks.
+            paired_importance = v3.reshape(2, self.pVal).T
+            paired_weights = v5.reshape(2, self.pVal).T
+            paired_path = os.path.join(self.outputDir, 'result_epoch' + str(epoch + 1) + '_paired_scores.csv')
+            pd.DataFrame({
+                'run_id': self.run_id,
+                'epoch': epoch + 1,
+                'feature_id': self.feature_names,
+                'control_kind': self.control_kind,
+                'score_definition': 'dnn_squared_path_importance',
+                'exposure_importance': paired_importance[:, 0],
+                'control_importance': paired_importance[:, 1],
+                'W': np.abs(paired_importance[:, 0]) - np.abs(paired_importance[:, 1]),
+                'exposure_weight_product': paired_weights[:, 0],
+                'control_weight_product': paired_weights[:, 1],
+            }).to_csv(paired_path, mode='a', header=not os.path.exists(paired_path), index=False)
